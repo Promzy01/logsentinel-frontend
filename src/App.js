@@ -14,7 +14,7 @@ function App() {
 
   const fetchAlerts = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:5000/alerts', {
+      const response = await axios.get('https://logsentinel-backend.onrender.com/alerts', {
         params: filters,
       });
       setAlerts(response.data.alerts);
@@ -31,10 +31,10 @@ function App() {
 
     const formData = new FormData();
     formData.append('logfile', file);
-    formData.append('email', email); // ✅ send email
+    formData.append('email', email);
 
     try {
-      const response = await axios.post('http://localhost:5000/upload-log', formData);
+      const response = await axios.post('https://logsentinel-backend.onrender.com/upload-log', formData);
       setResult(response.data);
       toast.success('✅ Log uploaded and analyzed');
       fetchAlerts();
