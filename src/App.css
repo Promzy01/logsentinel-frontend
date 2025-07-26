@@ -36,3 +36,32 @@
     transform: rotate(360deg);
   }
 }
+
+/* 🔽 New Styles for Card Layout and Risk Badges */
+.card-box {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  margin-bottom: 1.5rem;
+}
+
+.badge-risk {
+  padding: 5px 10px;
+  border-radius: 12px;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.risk-high {
+  background-color: #dc3545;
+}
+
+.risk-medium {
+  background-color: #fd7e14;
+}
+
+.risk-low {
+  background-color: #ffc107;
+  color: black;
+}
