@@ -45,7 +45,7 @@ function App() {
       const response = await axios.post(`${API_BASE}/upload-log`, formData);
       setResult(response.data);
       toast.success('✅ Log uploaded and analyzed');
-      fetchAlerts();
+      if (token) fetchAlerts();
     } catch (error) {
       toast.error('❌ Upload failed');
       console.error(error);
@@ -67,49 +67,44 @@ function App() {
     if (token) fetchAlerts();
   }, [fetchAlerts, token]);
 
-  if (!token) {
-    return (
-      <div className="container mt-4">
-        <h3 className="text-center mb-4">🔐 {authMode === 'login' ? 'Login' : 'Register'} to access LogSentinel</h3>
-        <div className="d-flex flex-column align-items-center gap-2 mb-3">
+  return (
+    <div className="container mt-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h2>🛡️ LogSentinel</h2>
+        {token && (
+          <button className="btn btn-danger btn-sm" onClick={logout}>
+            Logout
+          </button>
+        )}
+      </div>
+
+      {!token && (
+        <div className="card p-3 mb-4">
+          <h4 className="text-center">{authMode === 'login' ? 'Login' : 'Register'}</h4>
           <input
             type="email"
             placeholder="Email"
             value={authForm.email}
             onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
-            className="form-control"
-            style={{ maxWidth: '400px' }}
+            className="form-control my-2"
           />
           <input
             type="password"
             placeholder="Password"
             value={authForm.password}
             onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
-            className="form-control"
-            style={{ maxWidth: '400px' }}
+            className="form-control my-2"
           />
-          <button className="btn btn-primary w-100" onClick={handleAuth}>
+          <button className="btn btn-primary mb-2" onClick={handleAuth}>
             {authMode === 'login' ? 'Login' : 'Register'}
           </button>
-          <button
-            className="btn btn-link"
-            onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
-          >
+          <button className="btn btn-link" onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}>
             {authMode === 'login' ? 'Create account' : 'Back to login'}
           </button>
         </div>
-        <ToastContainer />
-      </div>
-    );
-  }
+      )}
 
-  return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>🛡️ LogSentinel Dashboard</h2>
-        <button className="btn btn-danger btn-sm" onClick={logout}>Logout</button>
-      </div>
-
+      {/* Upload */}
       <div className="d-flex flex-column align-items-center gap-2 mb-3">
         <input
           type="email"
@@ -125,6 +120,7 @@ function App() {
         </div>
       </div>
 
+      {/* Upload result */}
       {result && (
         <div className="card-box">
           <h4>Result for: <strong>{result.filename}</strong></h4>
@@ -155,41 +151,46 @@ function App() {
         </div>
       )}
 
-      <hr className="my-5" />
-      <button
-        className="btn btn-outline-dark mb-3"
-        onClick={() => setShowPastAlerts(!showPastAlerts)}
-      >
-        {showPastAlerts ? 'Hide Past Alerts' : 'Show Past Alerts'}
-      </button>
-
-      {showPastAlerts && (
+      {/* Alerts - only if logged in */}
+      {token && (
         <>
-          <h4>📜 Past Alerts</h4>
-          <div className="row mb-3">
-            <div className="col-md-3">
-              <input type="text" className="form-control" placeholder="Search IP" name="ip" onChange={(e) => setFilters({ ...filters, ip: e.target.value })} />
-            </div>
-            <div className="col-md-3">
-              <input type="date" className="form-control" name="from" onChange={(e) => setFilters({ ...filters, from: e.target.value })} />
-            </div>
-            <div className="col-md-3">
-              <input type="date" className="form-control" name="to" onChange={(e) => setFilters({ ...filters, to: e.target.value })} />
-            </div>
-            <div className="col-md-3">
-              <button className="btn btn-secondary w-100" onClick={handleSearch}>Search</button>
-            </div>
-          </div>
-          <ul className="list-group mb-5">
-            {alerts.map((a, idx) => (
-              <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
-                <span><strong>{a.ip}</strong></span>
-                <span className="text-muted small">
-                  {new Date(a.timestamp).toLocaleString()} — {a.failedAttempts} attempts in {a.withinSeconds}s
-                </span>
-              </li>
-            ))}
-          </ul>
+          <hr className="my-5" />
+          <button
+            className="btn btn-outline-dark mb-3"
+            onClick={() => setShowPastAlerts(!showPastAlerts)}
+          >
+            {showPastAlerts ? 'Hide Past Alerts' : 'Show Past Alerts'}
+          </button>
+
+          {showPastAlerts && (
+            <>
+              <h4>📜 Past Alerts</h4>
+              <div className="row mb-3">
+                <div className="col-md-3">
+                  <input type="text" className="form-control" placeholder="Search IP" name="ip" onChange={(e) => setFilters({ ...filters, ip: e.target.value })} />
+                </div>
+                <div className="col-md-3">
+                  <input type="date" className="form-control" name="from" onChange={(e) => setFilters({ ...filters, from: e.target.value })} />
+                </div>
+                <div className="col-md-3">
+                  <input type="date" className="form-control" name="to" onChange={(e) => setFilters({ ...filters, to: e.target.value })} />
+                </div>
+                <div className="col-md-3">
+                  <button className="btn btn-secondary w-100" onClick={fetchAlerts}>Search</button>
+                </div>
+              </div>
+              <ul className="list-group mb-5">
+                {alerts.map((a, idx) => (
+                  <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
+                    <span><strong>{a.ip}</strong></span>
+                    <span className="text-muted small">
+                      {new Date(a.timestamp).toLocaleString()} — {a.failedAttempts} attempts in {a.withinSeconds}s
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </>
       )}
       <ToastContainer />
