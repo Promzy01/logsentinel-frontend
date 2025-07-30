@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 function Register() {
   const [email, setEmail] = useState('');
@@ -9,12 +10,22 @@ function Register() {
   const navigate = useNavigate();
 
   const handleRegister = async () => {
+    if (!email || !password) {
+      toast.error('Email and password are required.');
+      return;
+    }
+
     try {
-      await axios.post('https://logsentinel-backend.onrender.com/register', { email, password });
-      alert('✅ Registration successful! You can now log in.');
+      await axios.post('https://logsentinel-backend.onrender.com/register', {
+        email,
+        password,
+      });
+      toast.success('✅ Registration successful! You can now log in.');
       navigate('/login');
     } catch (err) {
-      alert('❌ Registration failed: ' + err.response?.data?.message || err.message);
+      const message =
+        err.response?.data?.message || 'Registration failed. Please try again.';
+      toast.error(`❌ ${message}`);
     }
   };
 
@@ -38,6 +49,12 @@ function Register() {
       <button onClick={handleRegister} className="btn btn-success w-100">
         Register
       </button>
+
+      <div className="mt-3 text-center">
+        <button className="btn btn-link" onClick={() => navigate('/login')}>
+          ← Back to login
+        </button>
+      </div>
     </div>
   );
 }
