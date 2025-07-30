@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
@@ -55,11 +56,12 @@ function App() {
   const handleAuth = async () => {
     const endpoint = authMode === 'login' ? 'login' : 'register';
     try {
-      const res = await axios.post(`${API_BASE}/auth/${endpoint}`, authForm);
+      const res = await axios.post(`${API_BASE}/${endpoint}`, authForm); // ✅ fixed: removed /auth
       login(res.data.token);
       toast.success(`✅ ${authMode} successful`);
     } catch (err) {
       toast.error(`❌ ${authMode} failed`);
+      console.error(err);
     }
   };
 
