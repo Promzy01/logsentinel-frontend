@@ -104,7 +104,7 @@ function App() {
         </div>
       )}
 
-      {/* Upload */}
+      {/* Upload Section */}
       <div className="d-flex flex-column align-items-center gap-2 mb-3">
         <input
           type="email"
@@ -120,7 +120,6 @@ function App() {
         </div>
       </div>
 
-      {/* Upload result */}
       {result && (
         <div className="card-box">
           <h4>Result for: <strong>{result.filename}</strong></h4>
@@ -151,7 +150,7 @@ function App() {
         </div>
       )}
 
-      {/* Alerts - only if logged in */}
+      {/* Alerts section (only for logged in users) */}
       {token && (
         <>
           <hr className="my-5" />
@@ -193,6 +192,7 @@ function App() {
           )}
         </>
       )}
+
       <ToastContainer />
     </div>
   );
